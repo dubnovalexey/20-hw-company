@@ -125,62 +125,26 @@ function renderEmployeeList() {
 }
 
 function renderStats() {
-    // Получаем количество сотрудников
-    const employees = firm.employees; // Актуальный список, чтобы не дублировать код, используем геттер
     statsDiv.innerHTML = '';
 
-    // БЛОК ПРОВЕРКИ НА ПУСТОТУ
-    if (employees.length === 0) {
+    // Получаем статистику через геттер класса Company
+    const stats = firm.stats;
+
+    // БЛОК ПРОВЕРКИ НА ПУСТОТУ (геттер возвращает null, если список пуст)
+    if (stats === null) {
         statsDiv.appendChild(createInfoElement('No employees in the company.', 'p'));
         return;
     }
 
-
-    // Вычисляем статистику
-    const stats = employees.reduce((acc, employee) => {
-        // зарплата
-        acc.totalSalary += employee.salary;
-        if (employee.salary > acc.maxSalary) {
-            acc.maxSalary = employee.salary;
-            acc.highestPaidEmployee = employee;
-        }
-
-        // возраст
-        acc.totalAge += employee.age;
-        // max и min возраст
-        if (employee.age > acc.maxAge) {
-            acc.maxAge = employee.age;
-            acc.oldestEmployee = employee;
-        }
-        if (employee.age < acc.minAge) {
-            acc.minAge = employee.age;
-            acc.youngestEmployee = employee;
-        }
-        return acc;
-    }, {
-        totalSalary: 0,
-        maxSalary: -Infinity,// для корректной работы сравнения
-        highestPaidEmployee: null,
-        totalAge: 0,
-        maxAge: -Infinity,
-        minAge: Infinity,
-        oldestEmployee: null,
-        youngestEmployee: null
-    });
-
-// Средняя зарплата
-    const averageSalary = stats.totalSalary / employees.length;
-// Средний возраст
-    const averageAge = stats.totalAge / employees.length;
-// Отображаем статистику
-    statsDiv.appendChild(createInfoElement(`Total Employees: ${employees.length}`, 'p'));
-    statsDiv.appendChild(createInfoElement(`Average Salary: $${averageSalary.toFixed(2)}`, 'p'));
+    // Отображаем статистику, используя данные из объекта stats
+    statsDiv.appendChild(createInfoElement(`Total Employees: ${stats.totalEmployees}`, 'p'));
+    statsDiv.appendChild(createInfoElement(`Average Salary: $${stats.averageSalary.toFixed(2)}`, 'p'));
+    // Обрати внимание: мы используем stats.maxSalary и stats.highestPaidEmployee
     statsDiv.appendChild(createInfoElement(`Highest Salary: $${stats.maxSalary.toFixed(2)} (Employee: ${stats.highestPaidEmployee.fullName()})`, 'p'));
-    statsDiv.appendChild(createInfoElement(`Average Age: ${averageAge.toFixed(1)} years`, 'p'));
+    statsDiv.appendChild(createInfoElement(`Average Age: ${stats.averageAge.toFixed(1)} years`, 'p'));
     statsDiv.appendChild(createInfoElement(`Oldest Employee: ${stats.oldestEmployee.fullName()} (${stats.maxAge} years)`, 'p'));
     statsDiv.appendChild(createInfoElement(`Youngest Employee: ${stats.youngestEmployee.fullName()} (${stats.minAge} years)`, 'p'));
 }
-
 
 // Инициализация пустой статистики при загрузке страницы
 renderStats();

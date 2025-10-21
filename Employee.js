@@ -56,4 +56,13 @@ class Employee extends Person {
             this._salary = value;
         }
     }
+    toHTML() {
+        return `
+        ID: ${this.id},
+        Name: ${this.fullName()},
+        Age: ${this.age},
+        Salary: $${this.salary.toFixed(2)}
+        `;
+    }
+
 }
