@@ -79,6 +79,7 @@ function handleAddEmployee(event) {
         return;
     }
 
+    // 4. Создание и добавление сотрудника
 
 
     // Создаем нового сотрудника
