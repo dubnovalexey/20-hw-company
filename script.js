@@ -89,39 +89,26 @@ function handleAddEmployee(event) {
 }
 
 function renderEmployeeList() {
-    // 1. Получаем актуальный список
     const employees = firm.employees;
+    listEmployeesDiv.innerHTML = ''; // Очистка родителя остается, чтобы избежать дублирования
 
-    // 2. Очищаем текущее отображение
-    listEmployeesDiv.innerHTML = '';
-
-    // 3. Создаем и добавляем элементы для каждого сотрудника
     employees.forEach(employee => {
-            const employeeDiv = document.createElement('div');
-            employeeDiv.style.marginBottom = '10px';
+        const employeeDiv = document.createElement('div');
+        employeeDiv.style.marginBottom = '10px';
 
-            // Добавляем информацию о сотруднике
-            employeeDiv.innerHTML = `
-        ID: ${employee.id},
-        Name: ${employee.fullName()},
-        Age: ${employee.age},
-        Salary: $${employee.salary.toFixed(2)}
-        `;
+        // 1. Используем toHTML() для получения данных
+        employeeDiv.innerHTML = employee.toHTML(); // Используем innerHTML только здесь для удобной вставки шаблона
 
-            // Создаем кнопку удаления с коллбеком
-            const deleteButton = createButtonDel(() => {
-                // 1. УДАЛЕНИЕ ИЗ КОМПАНИИ
-                firm.removeEmployee(employee.id);
-                // 2. ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ
-                renderEmployeeList();
-                renderStats();
+        // 2. Создаем кнопку удаления
+        const deleteButton = createButtonDel(() => {
+            firm.removeEmployee(employee.id);
+            renderEmployeeList();
+            renderStats();
+        });
 
-
-            });
-            employeeDiv.appendChild(deleteButton);
-            listEmployeesDiv.appendChild(employeeDiv);
-        }
-    );
+        employeeDiv.appendChild(deleteButton);
+        listEmployeesDiv.appendChild(employeeDiv);
+    });
 }
 
 function renderStats() {
