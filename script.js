@@ -43,6 +43,24 @@ function handleAddEmployee(event) {
         return;
     }
 
+    // Дополнительная валидация имени и фамилии (не только числа)
+    if (!isNaN(Number(firstName)) || !isNaN(Number(lastName))) {
+        alert('First Name and Last Name cannot be numbers only.');
+        return;
+    }
+
+    // Дополнительная валидация имени и фамилии (строки)
+    if (firstName !== String(firstName) || lastName !== String(lastName)) {
+        alert('First Name and Last Name must be strings.');
+        return;
+    }
+
+    // Дополнительная валидация имени и фамилии (длина)
+    if (firstName.length < 2 || lastName.length < 2 || firstName.length > 50 || lastName.length > 50) {
+        alert('First Name and Last Name must be between 2 and 50 characters long.');
+        return;
+    }
+
     // 3. Валидация даты (валидность и логические границы)
     const birthDate = new Date(birthDateStr);
     const today = new Date();
@@ -60,6 +78,7 @@ function handleAddEmployee(event) {
         alert('Birthdate cannot be earlier than 1900.');
         return;
     }
+
 
 
     // Создаем нового сотрудника
