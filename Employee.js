@@ -68,8 +68,8 @@ class Employee extends Person {
         }
     }
 
-    // --- Добавлен toHTML() для ООП-отображения ---
-    toHTML() {
+    // --- Добавлен toString() для ООП-отображения ---
+    toString() {
         return `
         ID: ${this.id},
         Name: ${this.fullName()},
