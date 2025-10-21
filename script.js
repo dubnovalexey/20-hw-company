@@ -1,13 +1,15 @@
+
 // TODO Homework: continue develop classes Person, Employee, Company
 // Hint: thinking in OOD (Object Oriented Design). NB! Encapsulation
 const firm = new Company();
+
 // === 1. ПОЛУЧЕНИЕ ССЫЛОК НА DOM-ЭЛЕМЕНТЫ ===
 
 // Поля ввода (Input)
 const inputId = document.getElementById('id');
 const inputFirstName = document.getElementById('firstName');
 const inputLastName = document.getElementById('lastName');
-const inputBirthDate = document.getElementById('birthdate');
+const inputBirthDate = document.getElementById('birthdate'); // ИСПРАВЛЕННЫЙ ID
 const inputSalary = document.getElementById('salary');
 
 // Кнопки (Button)
@@ -26,47 +28,42 @@ function handleAddEmployee(event) {
     const id = inputId.value.trim();
     const firstName = inputFirstName.value.trim();
     const lastName = inputLastName.value.trim();
-    const birthDate = inputBirthDate.value;
+    const birthDateStr = inputBirthDate.value; // Строка даты
     const salary = parseFloat(inputSalary.value);
 
+    // 1. Валидация общих полей и зарплаты (ОБЯЗАТЕЛЬНО)
+    if (!id || !firstName || !lastName || isNaN(salary) || salary <= 0 || !birthDateStr) {
+        alert('All fields must be filled correctly! Salary must be a positive number.');
+        return;
+    }
 
-    // Валидация введенных данных
-    if (!id || !firstName || !lastName || isNaN(salary) || salary <= 0 || isNaN(new Date(birthDate).getTime())) {
-        alert('All fields must be filled correctly!');
+    // 2. Дополнительная валидация ID (должен быть числом)
+    if (isNaN(Number(id))) {
+        alert('ID must be a number.');
         return;
     }
-    // Дополнительная валидация
-    if (isNaN(Number(id)) || Number(id) <= 0) {
-        alert('ID must be a positive number!');
-        return;
-    }
-    if (!isNaN(Number(firstName)) || !isNaN(Number(lastName))) {
-        alert('First Name and Last Name cannot be numbers only!');
-        return;
-    }
-    if (firstName.length < 2 || lastName.length < 2) {
-        alert('First Name and Last Name must be at least 2 characters long!');
-        return;
-    }
-    if (firstName.length > 50 || lastName.length > 50) {
-        alert('First Name and Last Name must be no more than 50 characters long!');
-        return;
-    }
-    const birthDateObj = new Date(birthDate);
+
+    // 3. Валидация даты (валидность и логические границы)
+    const birthDate = new Date(birthDateStr);
     const today = new Date();
-    if (birthDateObj <= new Date('1900-01-01')) {
-        alert('Birth Date must be after 01.01.1900!');
+    const minValidDate = new Date('1900-01-01'); // Проверка: не раньше 1900 года
+
+    if (isNaN(birthDate.getTime())) {
+        alert('Invalid date format.');
         return;
     }
-    if (birthDateObj > today) {
-        alert('Birth Date cannot be in the future!');
+    if (birthDate >= today) { // Дата не может быть в будущем
+        alert('Birthdate cannot be in the future.');
+        return;
+    }
+    if (birthDate < minValidDate) {
+        alert('Birthdate cannot be earlier than 1900.');
         return;
     }
 
 
     // Создаем нового сотрудника
-    const newEmployee =
-        new Employee(id, firstName, lastName, birthDate, salary);
+    const newEmployee = new Employee(id, firstName, lastName, birthDateStr, salary);
 
     // Пытаемся добавить сотрудника в компанию
     const added = firm.addEmployee(newEmployee);
@@ -85,23 +82,25 @@ function handleAddEmployee(event) {
     inputLastName.value = '';
     inputBirthDate.value = '';
     inputSalary.value = '';
-
 }
 
 function renderEmployeeList() {
     const employees = firm.employees;
-    listEmployeesDiv.innerHTML = ''; // Очистка родителя остается, чтобы избежать дублирования
+    listEmployeesDiv.innerHTML = ''; // Очищаем родителя
 
+    // Используем toHTML()
     employees.forEach(employee => {
         const employeeDiv = document.createElement('div');
         employeeDiv.style.marginBottom = '10px';
 
-        // 1. Используем toHTML() для получения данных
-        employeeDiv.innerHTML = employee.toHTML(); // Используем innerHTML только здесь для удобной вставки шаблона
+        // Используем toHTML() для вставки данных
+        employeeDiv.innerHTML = employee.toHTML();
 
-        // 2. Создаем кнопку удаления
+        // Создаем кнопку удаления
         const deleteButton = createButtonDel(() => {
+            // 1. УДАЛЕНИЕ ИЗ КОМПАНИИ
             firm.removeEmployee(employee.id);
+            // 2. ОБНОВЛЕНИЕ ОТОБРАЖЕНИЯ
             renderEmployeeList();
             renderStats();
         });
@@ -126,16 +125,16 @@ function renderStats() {
     // Отображаем статистику, используя данные из объекта stats
     statsDiv.appendChild(createInfoElement(`Total Employees: ${stats.totalEmployees}`, 'p'));
     statsDiv.appendChild(createInfoElement(`Average Salary: $${stats.averageSalary.toFixed(2)}`, 'p'));
-    // Обрати внимание: мы используем stats.maxSalary и stats.highestPaidEmployee
     statsDiv.appendChild(createInfoElement(`Highest Salary: $${stats.maxSalary.toFixed(2)} (Employee: ${stats.highestPaidEmployee.fullName()})`, 'p'));
     statsDiv.appendChild(createInfoElement(`Average Age: ${stats.averageAge.toFixed(1)} years`, 'p'));
     statsDiv.appendChild(createInfoElement(`Oldest Employee: ${stats.oldestEmployee.fullName()} (${stats.maxAge} years)`, 'p'));
     statsDiv.appendChild(createInfoElement(`Youngest Employee: ${stats.youngestEmployee.fullName()} (${stats.minAge} years)`, 'p'));
 }
 
+
 // Инициализация пустой статистики при загрузке страницы
 renderStats();
 // Инициализация пустого списка сотрудников при загрузке страницы
-renderEmployeeList()
+renderEmployeeList();
 
 
